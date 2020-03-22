@@ -2,13 +2,23 @@
 
 import java.util.*;
 import java.io.*;
+import java.io.PrintWriter;
 
 public class Legesystem{
-    // Opprett lister som lagrer objektene i legesystemet
+  private static Liste<Pasient> pasientListe = new Lenkeliste<Pasient>();
+  private static Liste<Legemiddel> legemidlerListe = new Lenkeliste<Legemiddel>();
+  private static Liste<Lege> legeListe = new SortertLenkeliste<Lege>();
+  private static Liste<Resept> reseptListe = new Lenkeliste<Resept>();
+    // Oppretter lister som lagrer objektene i legesystemet
+
+
 
     public static void main(String[] args){
       int x = 1;
       File fil;
+      fil = new File("tekstfil.txt");
+      lesFraFil(fil);
+
 //Deloppgave E2, en start
       while (x != 0){
         Scanner input = new Scanner(System.in);
@@ -18,20 +28,23 @@ public class Legesystem{
         + "2. Opprette og legge til nye elementer i systemet" + " \n"
         + "3. Bruke en gitt resept fra listen til en pasient" + " \n"
         + "4. Skrive ut statistikk" + " \n"
-        + "5. Skrive alle data fra fil" + " \n");
+        + "5. Skrive alle data til fil" + " \n");
         x = input.nextInt();
 
         if (x == 1){
-          fil = new File("tekstfil.txt");
-          lesFraFil(fil);
+          skrivUtAlt();
+        } else if(x == 2){
+          opprettOgLeggTilElement();
+        }else if(x == 3){
+          brukResept();
+        }else if(x == 4){
+          statistikk();
+        }else if(x == 5){
+          skrivTilFil();
         }
-
       }
-
-      //lesFraFil()
-
-
     }
+
 //Deloppgave E1
     private static void lesFraFil(File fil){
         Scanner scanner = null;
@@ -41,20 +54,16 @@ public class Legesystem{
             System.out.println("Fant ikke filen, starter opp som et tomt Legesystem");
             return;
         }
-
         String innlest = scanner.nextLine();
-
 
         while(scanner.hasNextLine()){
             String[] info = innlest.split(" ");
-            String[] tempListe;
-            String navn;
-            String id;
             // Legger til alle pasientene i filen
             if(info[1].compareTo("Pasienter") == 0){
-
-              Liste<Pasient> pasientListe = new Lenkeliste<Pasient>();
-
+              String[] tempListe;
+              String navn;
+              String id;
+              //Flytter lenkeliste for pasienter ut
                 while(scanner.hasNextLine()) {
                     innlest = scanner.nextLine();
                     //Om vi er ferdig med å legge til pasienter, bryt whileløkken,
@@ -67,8 +76,6 @@ public class Legesystem{
                     id = tempListe[1];
                     //Om vi er ferdig med å legge til pasienter, bryt whileløkken,
                     //slik at vi fortsetter til koden for å legge til legemiddler
-                    System.out.println(navn);
-                    System.out.println(id);
                     Pasient nyPasient = new Pasient(navn, id);
                     pasientListe.leggTil(nyPasient);
                   }
@@ -77,15 +84,11 @@ public class Legesystem{
 
             //Legger inn Legemidlene
             else if(info[1].compareTo("Legemidler") == 0){
-
-              Liste<Legemiddel> legemidlerListe = new Lenkeliste<Legemiddel>();
-
+              String navnLegemiddel;
+              Double prisLegemiddel;
+              Double virkestoffLegemiddel;
+              int styrkeLegemiddel;
                 while(scanner.hasNextLine()){
-                  String navnLegemiddel;
-                  Double prisLegemiddel;
-                  Double virkestoffLegemiddel;
-                  int styrkeLegemiddel;
-
                     innlest = scanner.nextLine();
                     //Om vi er ferdig med å legge til legemidler, bryt whileløkken,
                     //slik at vi fortsetter til koden for å legge til leger
@@ -93,28 +96,24 @@ public class Legesystem{
                         break;
                     }
                     String[] legemiddel = innlest.split(",");
-                    if(legemiddel[1].compareTo("narkotisk") == 0){
 
+                    if(legemiddel[1].compareTo("narkotisk") == 0){
                       navnLegemiddel = legemiddel[0];
                       prisLegemiddel = Double.valueOf(legemiddel[2]);
                       virkestoffLegemiddel = Double.valueOf(legemiddel[3]);
                       styrkeLegemiddel = Integer.parseInt(legemiddel[4]);
 
-                      System.out.println(navnLegemiddel);
-                      System.out.println(prisLegemiddel);
 
                       Narkotisk nyttLegemiddel = new Narkotisk(navnLegemiddel, prisLegemiddel, virkestoffLegemiddel, styrkeLegemiddel);
                       legemidlerListe.leggTil(nyttLegemiddel);
 
                     }
                     else if(legemiddel[1].compareTo("vanedannende") == 0){
+
                       navnLegemiddel = legemiddel[0];
                       prisLegemiddel = Double.valueOf(legemiddel[2]);
                       virkestoffLegemiddel = Double.valueOf(legemiddel[3]);
                       styrkeLegemiddel = Integer.parseInt(legemiddel[4]);
-
-                      System.out.println(navnLegemiddel);
-                      System.out.println(prisLegemiddel);
 
                       Vanedannende nyttLegemiddel = new Vanedannende(navnLegemiddel, prisLegemiddel, virkestoffLegemiddel, styrkeLegemiddel);
                       legemidlerListe.leggTil(nyttLegemiddel);
@@ -124,19 +123,16 @@ public class Legesystem{
                       prisLegemiddel = Double.valueOf(legemiddel[2]);
                       virkestoffLegemiddel = Double.valueOf(legemiddel[3]);
 
-                      System.out.println(navnLegemiddel);
-                      System.out.println(prisLegemiddel);
-
                       Vanlig nyttLegemiddel = new Vanlig(navnLegemiddel, prisLegemiddel, virkestoffLegemiddel);
                       legemidlerListe.leggTil(nyttLegemiddel);
 
                     }
-
                 }
             }
+
             //Legger inn leger
             else if(info[1].compareTo("Leger") == 0){
-              Liste<Lege> legeListe = new Lenkeliste<Lege>();
+
                 while(scanner.hasNextLine()){
                   String navnLege;
                   int kontrollIdLege;
@@ -152,48 +148,478 @@ public class Legesystem{
                     if(kontrollid == 0){
                       navnLege = info[0];
 
-                      System.out.println(navnLege);
-
-
                       Lege nyLege = new Lege(navnLege);
                       legeListe.leggTil(nyLege);
 
-                      //Maa sorteres
                     }else{
                       navnLege = info[0];
                       kontrollIdLege = Integer.parseInt(info[1]);
 
-                      System.out.println(navnLege);
-                      System.out.println(kontrollIdLege);
-
                       Spesialist nyLege = new Spesialist(navnLege, kontrollIdLege);
                       legeListe.leggTil(nyLege);
-
-                      //Maa sorteres
                     }
                 }
-
             }
             //Legger inn Resepter
             else if(info[1].compareTo("Resepter") == 0){
+
                 while(scanner.hasNextLine()){
+
                     innlest = scanner.nextLine();
-                    info = innlest.split(", ");
-                    //
-                    // Her må du finne legen, legemiddelet, og pasienten som ligger
-                    // i lenkelistene utifra informasjonen.
-                    //
-                    // Dette burde skilles ut i hjelpemetoder leter gjennom listene
-                    // og returnerer riktig objekt, ut ifra informasjonen som ble lest inn
-                    //
-                    // Opprett et reseptobjekt med skrivResept funksjonen i legen,
-                    // og legg det til i en lenkeliste
-                    //
-                    // Dersom legeobjektene dine oppretter PResepter, kan du ignorere reit
-                    //
-                    //
+                    info = innlest.split(",");
+                    //# Resepter (legemiddelNummer,legeNavn,pasientID,type,[reit])
+                    Legemiddel reseptLegemiddel = legemidlerListe.hent(Integer.parseInt(info[0])); //
+                    Pasient reseptPasient = pasientListe.hent(Integer.parseInt(info[2]));
+
+
+                    if (info[3].compareTo("hvit") == 0){
+                      for(Lege i : legeListe){
+                        if (i.hentNavn().compareTo(info[1]) == 0){
+                          try{
+                            Resept resept = i.skrivHvitResept(reseptLegemiddel, reseptPasient, Integer.parseInt(info[4]));
+                            reseptListe.leggTil(resept);
+                            reseptPasient.leggTilResept(resept);
+                          }
+                          catch(UlovligUtskrift e){
+                            System.out.println("En feil maa ha skjedd");
+                          }
+                        }
+                      }
+                    }
+                    else if (info[3].compareTo("blaa") == 0){
+                      for(Lege i : legeListe){
+                        if (i.hentNavn().compareTo(info[1]) == 0){
+                          try{
+                            Resept resept = i.skrivBlaaResept(reseptLegemiddel, reseptPasient, Integer.parseInt(info[4]));
+                            reseptListe.leggTil(resept);
+                            reseptPasient.leggTilResept(resept);
+                          }
+                          catch(UlovligUtskrift e){
+                            System.out.println("En feil maa ha skjedd");
+                          }
+                        }
+                      }
+                    }
+                    else if(info[3].compareTo("millitaer") == 0){
+                      for(Lege i : legeListe){
+                        if (i.hentNavn().compareTo(info[1]) == 0){
+                          try{
+                            Resept resept = i.skrivMillitaerResept(reseptLegemiddel, reseptPasient, Integer.parseInt(info[4]));
+                            reseptListe.leggTil(resept);
+                            reseptPasient.leggTilResept(resept);
+                          }
+                          catch(UlovligUtskrift e){
+                            System.out.println("En feil maa ha skjedd");
+                          }
+                        }
+                      }
+                    }
+                    else if(info[3].compareTo("p") == 0){
+                      for(Lege i : legeListe){
+                        if (i.hentNavn().compareTo(info[1]) == 0){
+                          try{
+                            Resept resept = i.skrivPResept(reseptLegemiddel, reseptPasient);
+                            reseptListe.leggTil(resept);
+                            reseptPasient.leggTilResept(resept);
+                          }
+                          catch(UlovligUtskrift e){
+                            System.out.println("En feil maa ha skjedd");
+                          }
+                        }
+                      }
+                    }
+
+                  }
+                    // kan skille ut hjelpemetoder som leter gjennom listene og returnerer riktig objekt, ut ifra informasjonen som ble lest inn
                 }
             }
-        }
     }
+    private static void skrivUtAlt(){
+          //Skriv ut pasienter, legemidler, leger og resepter
+          System.out.println("Pasienter \n");
+          for(Pasient i: pasientListe){
+            System.out.println("\n" + i + "\n");
+            for(Resept j : i.hentReseptStabel()){
+              System.out.print("\n" + j.toString() + "\n");
+            }
+          }
+          System.out.println("\n Legemidler \n");
+          for(Legemiddel i: legemidlerListe){
+            System.out.println(i + "\n");
+          }
+          System.out.println("\n Leger \n");
+          for(Lege i: legeListe){
+            System.out.println(i + "\n");
+          }
+          System.out.println("\n Resepter \n");
+          for(Resept i: reseptListe){
+            System.out.println(i + "\n");
+          }
+    }
+    private static void opprettOgLeggTilElement(){
+          //Skal vaere mulig aa opprette et av foelgende objekt Lege, Pasient, Resept eller Legemiddel
+          //Sjekk at det er mulig aa opprette objektet
+          int detSomSkalLeggesTil=1;
+
+          while (detSomSkalLeggesTil != 0){
+            Scanner input = new Scanner(System.in);
+            System.out.println("Du har naa foelgende valgmuligheter:" + " \n"
+            + "0. Avslutt/Gaa tilbake " + " \n"
+            + "1. Legg til en pasient \n"
+            + "2. Legg til en lege \n"
+            + "3. Legg til et legemiddel \n"
+            + "4. Legg til en resept \n");
+            detSomSkalLeggesTil = input.nextInt();
+
+            if (detSomSkalLeggesTil == 1){
+              //Legg til pasient
+              Scanner pasient = new Scanner(System.in);
+              System.out.println("Hva er navnet paa pasienten? ");
+              String navn = pasient.nextLine();
+              System.out.println("Hva er personnummeret til pasienten? ");
+              String id = pasient.nextLine();
+              Pasient nyPasient = new Pasient(navn, id);
+              pasientListe.leggTil(nyPasient);
+
+            } else if(detSomSkalLeggesTil == 2){
+              //Legg til lege
+              Scanner lege = new Scanner(System.in);
+              System.out.println("Er legen en spesialist? Ja/Nei ");
+              String jaNeiSvar = lege.nextLine();
+
+                if (jaNeiSvar.equals("Nei")){
+                  System.out.println("Hva er navnet paa legen ");
+                  String navnLege = lege.nextLine();
+                  Lege nyLege = new Lege(navnLege);
+                  legeListe.leggTil(nyLege);
+                }else if(jaNeiSvar.equals("Ja")){
+                  System.out.println("Hva er navnet paa spesialisten? ");
+                  String navnLege = lege.nextLine();
+                  System.out.println("Hva er spesialistens kontrollid? ");
+                  int kontrollIdLege = lege.nextInt();
+                  Spesialist nyLege = new Spesialist(navnLege, kontrollIdLege);
+                  legeListe.leggTil(nyLege);
+                }
+            } else if(detSomSkalLeggesTil == 3){
+              //Legg til legemiddel
+              Scanner legemiddel = new Scanner(System.in);
+              System.out.println("Hva slags legemiddel er det? Vanlig/Vanedannende/Narkotisk ");
+              String typeLegemiddel = legemiddel.nextLine();
+
+                if (typeLegemiddel.equals("Vanlig")){
+                  System.out.println("Hva er navnet paa legemiddelet? ");
+                  String navnLegemiddel = legemiddel.nextLine();
+                  System.out.println("Hva er prisen? ");
+                  Double prisLegemiddel = legemiddel.nextDouble();
+                  System.out.println("Hvilket virkestoff? ");
+                  Double virkestoffLegemiddel = legemiddel.nextDouble();
+                  Vanlig nyttLegemiddel = new Vanlig(navnLegemiddel, prisLegemiddel, virkestoffLegemiddel);
+                  legemidlerListe.leggTil(nyttLegemiddel);
+
+                }else if(typeLegemiddel.equals("Vanedannende")){
+
+                  System.out.println("Hva er navnet paa legemiddelet? ");
+                  String navnLegemiddel = legemiddel.nextLine();
+                  System.out.println("Hva er prisen? ");
+                  Double prisLegemiddel = legemiddel.nextDouble();
+                  System.out.println("Hvilket virkestoff? ");
+                  Double virkestoffLegemiddel = legemiddel.nextDouble();
+                  System.out.println("Hvilken styrke? ");
+                  int styrkeLegemiddel = legemiddel.nextInt();
+                  Vanedannende nyttLegemiddel = new Vanedannende(navnLegemiddel, prisLegemiddel, virkestoffLegemiddel, styrkeLegemiddel);
+                  legemidlerListe.leggTil(nyttLegemiddel);
+
+                }else if(typeLegemiddel.equals("Narkotisk")){
+
+                  System.out.println("Hva er navnet paa legemiddelet? ");
+                  String navnLegemiddel = legemiddel.nextLine();
+                  System.out.println("Hva er prisen? ");
+                  Double prisLegemiddel = legemiddel.nextDouble();
+                  System.out.println("Hvilket virkestoff? ");
+                  Double virkestoffLegemiddel = legemiddel.nextDouble();
+                  System.out.println("Hvilken styrke? ");
+                  int styrkeLegemiddel = legemiddel.nextInt();
+                  Narkotisk nyttLegemiddel = new Narkotisk(navnLegemiddel, prisLegemiddel, virkestoffLegemiddel, styrkeLegemiddel);
+                  legemidlerListe.leggTil(nyttLegemiddel);
+                }
+            }else if(detSomSkalLeggesTil == 4){
+              //Legg til resept
+              Scanner resept = new Scanner(System.in);
+              System.out.println("Hva slags resept er det? Hvit/Blaa/Militaer/P ");
+              String typeResept = resept.nextLine();
+
+                if (typeResept.equals("Hvit")){
+                  System.out.println("Hvem er legen? ");
+                  for (Lege l : legeListe){
+                    System.out.println(l.toString());
+                  }
+                  String reseptLegeNavn = resept.nextLine();
+
+                  for(Lege lege : legeListe){
+                    if(lege.hentNavn().compareTo(reseptLegeNavn)==0){
+                      Lege reseptLege = lege;
+                      System.out.println("Hva er pasientens personnr? ");
+                      for (Pasient p : pasientListe){
+                        System.out.println(p.toString());
+                      }
+                      String reseptPasientPersonnummer = resept.nextLine();
+                      for (Pasient pasient : pasientListe){
+                        if(pasient.hentPasientFodselsnr().compareTo(reseptPasientPersonnummer)==0){
+                          Pasient reseptPasient = pasient;
+                          System.out.println("Hva er navnet paa legemiddelet? ");
+                          for (Legemiddel l : legemidlerListe){
+                            System.out.println(l.toString());
+                          }
+                          String reseptLegemiddelNavn = resept.nextLine();
+                          for(Legemiddel legemiddel : legemidlerListe){
+                            if(legemiddel.hentNavn().compareTo(reseptLegemiddelNavn)==0){
+                              Legemiddel reseptLegemiddel = legemiddel;
+                              System.out.println("Hvor mange reit? ");
+                              int reseptReit = resept.nextInt();
+                              try{
+                                Resept res = reseptLege.skrivHvitResept(reseptLegemiddel, reseptPasient, reseptReit);
+                                reseptListe.leggTil(res);
+                                reseptPasient.leggTilResept(res);
+                              }
+                              catch(UlovligUtskrift e){
+                                System.out.println("En feil maa ha skjedd");
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }else if(typeResept.equals("Blaa")){
+                  System.out.println("Hvem er legen? ");
+                  for (Lege l : legeListe){
+                    System.out.println(l.toString());
+                  }
+                  String reseptLegeNavn = resept.nextLine();
+
+                  for(Lege lege : legeListe){
+                    if(lege.hentNavn().compareTo(reseptLegeNavn)==0){
+                      Lege reseptLege = lege;
+                      System.out.println("Hva er pasientens personnr? ");
+                      for (Pasient p : pasientListe){
+                        System.out.println(p.toString());
+                      }
+                      String reseptPasientPersonnummer = resept.nextLine();
+                      for (Pasient pasient : pasientListe){
+                        if(pasient.hentPasientFodselsnr().compareTo(reseptPasientPersonnummer)==0){
+                          Pasient reseptPasient = pasient;
+                          System.out.println("Hva er navnet paa legemiddelet? ");
+                          for (Legemiddel l : legemidlerListe){
+                            System.out.println(l.toString());
+                          }
+                          String reseptLegemiddelNavn = resept.nextLine();
+                          for(Legemiddel legemiddel : legemidlerListe){
+                            if(legemiddel.hentNavn().compareTo(reseptLegemiddelNavn)==0){
+                              Legemiddel reseptLegemiddel = legemiddel;
+                              System.out.println("Hvor mange reit? ");
+                              int reseptReit = resept.nextInt();
+                              try{
+
+                                Resept res = reseptLege.skrivBlaaResept(reseptLegemiddel, reseptPasient, reseptReit);
+                                reseptListe.leggTil(res);
+                                reseptPasient.leggTilResept(res);
+                              }
+                              catch(UlovligUtskrift e){
+                                System.out.println("En feil maa ha skjedd");
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+
+                }else if(typeResept.equals("Militaer")){
+
+                  System.out.println("Hvem er legen? ");
+                  for (Lege l : legeListe){
+                    System.out.println(l.toString());
+                  }
+                  String reseptLegeNavn = resept.nextLine();
+
+                  for(Lege lege : legeListe){
+                    if(lege.hentNavn().compareTo(reseptLegeNavn)==0){
+                      Lege reseptLege = lege;
+                      System.out.println("Hva er pasientens personnr? ");
+                      for (Pasient p : pasientListe){
+                        System.out.println(p.toString());
+                      }
+                      String reseptPasientPersonnummer = resept.nextLine();
+                      for (Pasient pasient : pasientListe){
+                        if(pasient.hentPasientFodselsnr().compareTo(reseptPasientPersonnummer)==0){
+                          Pasient reseptPasient = pasient;
+                          System.out.println("Hva er navnet paa legemiddelet? ");
+                          for (Legemiddel l : legemidlerListe){
+                            System.out.println(l.toString());
+                          }
+                          String reseptLegemiddelNavn = resept.nextLine();
+                          for(Legemiddel legemiddel : legemidlerListe){
+                            if(legemiddel.hentNavn().compareTo(reseptLegemiddelNavn)==0){
+                              Legemiddel reseptLegemiddel = legemiddel;
+                              System.out.println("Hvor mange reit? ");
+                              int reseptReit = resept.nextInt();
+                              try{
+
+                                Resept res = reseptLege.skrivMillitaerResept(reseptLegemiddel, reseptPasient, reseptReit);
+                                reseptListe.leggTil(res);
+                                reseptPasient.leggTilResept(res);
+                              }
+                              catch(UlovligUtskrift e){
+                                System.out.println("En feil maa ha skjedd");
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }else if(typeResept.equals("P")){
+                    System.out.println("Hvem er legen? ");
+                    for (Lege l : legeListe){
+                      System.out.println(l.toString());
+                    }
+                    String reseptLegeNavn = resept.nextLine();
+
+                    for(Lege lege : legeListe){
+                      if(lege.hentNavn().compareTo(reseptLegeNavn)==0){
+                        Lege reseptLege = lege;
+                        System.out.println("Hva er pasientens personnr? ");
+                        for (Pasient p : pasientListe){
+                          System.out.println(p.toString());
+                        }
+                        String reseptPasientPersonnummer = resept.nextLine();
+                        for (Pasient pasient : pasientListe){
+                          if(pasient.hentPasientFodselsnr().compareTo(reseptPasientPersonnummer)==0){
+                            Pasient reseptPasient = pasient;
+                            System.out.println("Hva er navnet paa legemiddelet? ");
+                            for (Legemiddel l : legemidlerListe){
+                              System.out.println(l.toString());
+                            }
+                            String reseptLegemiddelNavn = resept.nextLine();
+                            for(Legemiddel legemiddel : legemidlerListe){
+                              if(legemiddel.hentNavn().compareTo(reseptLegemiddelNavn)==0){
+                                Legemiddel reseptLegemiddel = legemiddel;
+
+                                try{
+
+                                  Resept res = reseptLege.skrivPResept(reseptLegemiddel, reseptPasient);
+                                  reseptListe.leggTil(res);
+                                  reseptPasient.leggTilResept(res);
+                                }
+                                catch(UlovligUtskrift e){
+                                  System.out.println("En feil maa ha skjedd");
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                }
+            }
+          }
+    }
+    private static void brukResept(){
+      Scanner pasient = new Scanner(System.in);
+      Scanner resept = new Scanner(System.in);
+
+      System.out.println("Hvilken pasient vil du se resepter for? \n");
+      for(Pasient p: pasientListe){
+        System.out.println(p.hentPasientID()+ ": " + p.toString() + "\n");
+      }
+      System.out.println("\n");
+
+      int valgtPasient = pasient.nextInt();
+
+      System.out.println("Hvilken resept vil du bruke? ");
+
+      for(Pasient passient : pasientListe){
+        if (passient.hentPasientID() == valgtPasient){
+          for(Resept ressept : passient.hentReseptStabel()){
+            System.out.println(ressept.hentId() + ": " + ressept.hentLegemiddel().hentNavn() + "(" + ressept.hentReit() + "reit )");
+          }
+        }
+      }
+      int valgtResept = resept.nextInt();
+      for(Pasient passient : pasientListe){
+        if (passient.hentPasientID() == valgtPasient){
+          for(Resept ressept : passient.hentReseptStabel()){
+            if(ressept.hentId() == valgtResept){
+              ressept.bruk();
+              System.out.println("Brukte resept paa " + ressept.hentLegemiddel().hentNavn() + " gjenvaerende " + ressept.hentReit() + " reit )");
+            }
+          }
+        }
+      }
+    }
+    private static void statistikk(){
+      //Totalt antall utskrevne resepter paa vanedannende legemidler
+      //Totalt antall utskrevne resepter paa narkotiske legemidler
+      //
+
+    }
+    private static void skrivTilFil(){
+      PrintWriter fil = null;
+      try {
+            fil = new PrintWriter("LegesystemTilFil.txt");
+          }
+      catch (Exception e) {
+            System.out.println("Kan ikke lage filen");
+              System.exit(1);
+          }
+
+        fil.print("# Pasienter (navn, fnr) \n");
+        for(Pasient p : pasientListe){
+          fil.print(p.hentPasientNavn() + "," + p.hentPasientFodselsnr() + "\n");
+        }
+        fil.print("# Legemidler (navn,type,pris,virkestoff,[styrke]) \n");
+        for(Legemiddel l : legemidlerListe){
+          if (l instanceof Narkotisk){
+            Narkotisk narkotiskLegemiddel = (Narkotisk) l;
+
+            fil.print(narkotiskLegemiddel.hentNavn() + "," + "narkotisk," + narkotiskLegemiddel.hentPris() + "," + narkotiskLegemiddel.hentVirkestoff() + "," //Pris blir null fordi det er en MillitaerResept, der pris settes lik null
+            + Integer.toString(narkotiskLegemiddel.hentNarkotiskStyrke()) + "\n");
+          }else if (l instanceof Vanedannende){
+            Vanedannende vanedannendeLegemiddel = (Vanedannende) l;
+            fil.print(l.hentNavn() + "," + "vanedannende," + l.hentPris() + "," + l.hentVirkestoff() + ","
+            + Integer.toString(vanedannendeLegemiddel.hentVanedannendeStyrke()) + "\n");
+          }else if (l instanceof Vanlig){
+            fil.print(l.hentNavn() + "," + "vanlig," + l.hentPris() + "," + l.hentVirkestoff() + ","  + "\n");
+          }
+        }
+        fil.print("# Leger (navn,kontrollid / 0 hvis vanlig lege)\n");
+        for(Lege le : legeListe){
+          if(le instanceof Spesialist){
+            Spesialist spesialistKontrollID = (Spesialist) le;
+            fil.print(le.hentNavn() + "," + Integer.toString(spesialistKontrollID.hentKontrollID()) + "\n");
+          }else {
+            fil.print(le.hentNavn() + "," + "0" + "\n");
+          }
+        }
+        fil.print("# Resepter (legemiddelNummer,legeNavn,pasientID,type,[reit])\n");
+        for(Resept resept : reseptListe){
+          if(resept instanceof PResept){
+            fil.print(Integer.toString(resept.hentLegemiddel().hentId()) + "," + resept.hentLege().hentNavn() + ","
+            + Integer.toString(resept.hentPasientId()) + "," + "p," + Integer.toString(resept.hentReit()) + "\n");
+          }else if (resept instanceof MillitaerResept){
+            fil.print(Integer.toString(resept.hentLegemiddel().hentId()) + ", " + resept.hentLege().hentNavn() + ","
+            + Integer.toString(resept.hentPasientId()) + "," + "millitaer," + Integer.toString(resept.hentReit()) + "\n");
+          }else if (resept instanceof BlaaResept){
+            fil.print(Integer.toString(resept.hentLegemiddel().hentId()) + ", " + resept.hentLege().hentNavn() + ","
+            + Integer.toString(resept.hentPasientId()) + "," + "blaa," + Integer.toString(resept.hentReit()) + "\n");
+          }else if (resept instanceof HvitResept){
+            fil.print(Integer.toString(resept.hentLegemiddel().hentId()) + ", " + resept.hentLege().hentNavn() + ","
+            + Integer.toString(resept.hentPasientId()) + "," + "hvit," + Integer.toString(resept.hentReit()) + "\n");
+          }
+        }
+        fil.println();
+        fil.close();
+        System.out.print("Data er skrevet ut til fil. \n");
+    }
+
 }
