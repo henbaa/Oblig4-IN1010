@@ -22,7 +22,7 @@ public class Legesystem{
 //Deloppgave E2, en start
       while (x != 0){
         Scanner input = new Scanner(System.in);
-        System.out.println("Du har naa foelgende valgmuligheter:" + " \n"
+        System.out.println("\n \n Du har naa foelgende valgmuligheter:" + " \n"
         + "0. Avslutt " + " \n"
         + "1. Skriv ut fullstending liste over pasienter, leger, legemidler og resepter " + " \n"
         + "2. Opprette og legge til nye elementer i systemet" + " \n"
@@ -45,7 +45,7 @@ public class Legesystem{
       }
     }
 
-//Deloppgave E1
+
     private static void lesFraFil(File fil){
         Scanner scanner = null;
         try{
@@ -558,10 +558,58 @@ public class Legesystem{
       }
     }
     private static void statistikk(){
-      //Totalt antall utskrevne resepter paa vanedannende legemidler
-      //Totalt antall utskrevne resepter paa narkotiske legemidler
-      //
+      int x = 0;
+      Scanner input = new Scanner(System.in);
+      System.out.println("\n Hva slags statistikk vil du se:" + " \n"
+      + "0. Avslutt/Gaa tilbake " + " \n"
+      + "1. Skriv ut totalt antall utskrevne resepter paa vanedannende legemidler " + " \n"
+      + "2. Skriv ut totalt antall utskrevne resepter paa narkotiske legemidler" + " \n"
+      + "3. Skriv ut liste over leger som har utskrevet resepter med narkotiske legemidler, og henholsvis antall" + " \n"
+      + "4. Skriv ut liste over pasienter som har mottatt resepter med narkotiske legemidler, og henholdsvis antall" + " \n");
+      x = input.nextInt();
 
+
+      if (x == 1){//Totalt antall utskrevne resepter paa vanedannende legemidler
+        int vanedannendeTeller = 0;
+        for (Resept resept:reseptListe){
+          if(resept.hentLegemiddel() instanceof Vanedannende){
+            vanedannendeTeller++;
+          }
+        }
+        System.out.println("Totalt antall utskrevne resepter paa vanedannende legemidler: " + vanedannendeTeller);
+      } else if(x == 2){ //Totalt antall utskrevne resepter paa narkotiske legemidler
+        int narkotiskTeller = 0;
+        for (Resept resept:reseptListe){
+          if(resept.hentLegemiddel() instanceof Narkotisk){
+            narkotiskTeller++;
+          }
+        }
+        System.out.println("Totalt antall utskrevne resepter paa narkotiske legemidler: " + narkotiskTeller);
+      }else if(x == 3){
+        for (Lege lege:legeListe){//Statistikk om mulig misbruk av narkotika skal vises på følgende måte:   List opp navnene på alle leger (i alfabetisk rekkefølge) som har skrevet ut minst en resept på narkotiske legemidler, og antallet slike resepter per lege.
+          int legeReseptTeller = 0;
+          for(Resept legeResept:lege.hentUtskrevedeResepter()){
+            if (legeResept.hentLegemiddel() instanceof Narkotisk){
+              legeReseptTeller++;
+            }
+          }
+          if(legeReseptTeller>0){
+            System.out.println(lege.hentNavn() + " har skrevet ut " + legeReseptTeller + " resept(er) med narkotiske legemidler \n");
+          }
+        }
+      }else if(x == 4){
+        for (Pasient pasient:pasientListe){//Statistikk om mulig misbruk av narkotika skal vises på følgende måte:  List opp navnene på alle pasienter som har minst en gyldig resept på narkotiske legemidler, og for disse, skriv ut antallet per pasient.
+          int pasientReseptTeller = 0;
+          for(Resept pasientResept:pasient.hentReseptStabel()){
+            if (pasientResept.hentLegemiddel() instanceof Narkotisk){
+              pasientReseptTeller++;
+            }
+          }
+          if(pasientReseptTeller>0){
+            System.out.println(pasient.hentPasientNavn() + " har faatt " + pasientReseptTeller + " resept(er) med narkotiske legemidler \n");
+          }
+        }
+      }
     }
     private static void skrivTilFil(){
       PrintWriter fil = null;
