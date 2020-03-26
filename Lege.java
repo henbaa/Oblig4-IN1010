@@ -1,3 +1,7 @@
+//IN1010
+//Oblig 4
+//Del D
+
 public class Lege implements Comparable<Lege> {
 
     protected static int nyId = 0;

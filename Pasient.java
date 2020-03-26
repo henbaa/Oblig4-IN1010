@@ -1,3 +1,6 @@
+//IN1010
+//Oblig 4
+//Del B
 public class Pasient {
 
     static int IDTeller = 0;

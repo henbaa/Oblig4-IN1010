@@ -1,3 +1,6 @@
+//IN1010
+//Oblig 4
+//Del C
 import java.util.Iterator;
 
 public class Lenkeliste<T> implements Liste<T> {
@@ -175,7 +178,7 @@ public class Lenkeliste<T> implements Liste<T> {
             start = p.neste;
             sluttIndeks--;
             return p.data;
-        }
+        } 
     }
 
     public boolean erTom() {
